@@ -1,0 +1,22 @@
+menu "TrivialMIPS platforms"
+    depends on MACH_TRIVIALMIPS
+
+choice
+    prompt "Board select"
+
+config TARGET_TRIVIALMIPS_THINPAD
+    bool "Thinpad board 2017"
+
+config TARGET_TRIVIALMIPS_NSCSCC
+    bool "NSCSCC board 2019"
+
+config TARGET_MEGASOC_DEMO
+    bool "MegaSoC Demo SoC"
+
+endchoice
+
+source "board/thucst/Kconfig"
+
+source "board/nscscc/Kconfig"
+
+endmenu

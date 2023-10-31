@@ -1,0 +1,50 @@
+/dts-v1/;
+
+/ {
+    model = "loongson,generic";
+    compatible = "loongson,loongson3";
+    #address-cells = <1>;
+    #size-cells = <1>;
+	
+	memory: memory@200000 {
+		device_type = "memory";
+        reg =  <0x200000  0xee00000>;
+	};
+
+	bus_clk: bus_clk {
+		compatible = "fixed-clock";
+        clock-frequency = <33000000>;
+		#clock-cells = <0>;
+	};
+
+	aliases {
+		console = &serial0;
+        serial = &serial0;
+        eth = &mac0;
+        mmc0 = &lsmmc0;
+	};
+
+	serial0: serial@9fe40000 {
+		compatible = "ns16550a";
+		reg = <0x9fe40000 0x1000>;
+        reg-offset = <0>;
+        reg-shift = <0>;
+        clocks = <&bus_clk>;
+        current-speed = <115200>;
+        no-loopback-test;
+	};
+
+	lsmmc0: lsmmc@9fe6c000 {
+		compatible = "ls,ls-mmc";
+		reg = <0x9fe6c000 0x1000>;
+        clocks = <&bus_clk>;
+	};
+
+	mac0: ethernet@9fe10000 {
+		compatible = "ls,ls-dmfe";
+		device_type = "network";
+		local-mac-address = [00 98 76 64 32 19];
+		reg = <0x9fe10000 0x10000>;
+	};
+};
+
