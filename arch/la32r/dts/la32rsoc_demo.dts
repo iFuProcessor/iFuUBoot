@@ -7,12 +7,8 @@ compatible = "loongson,loongson3";
 #address-cells = <1>;
 #size-cells = <1>;
 
-aliases {
-    serial0 = &cpu_uart0;
-};
-
 chosen {
-    stdout-path = "serial0:115200n8";
+    stdout-path =  &serial0 ;
     bootargs = "earlycon";
 };
 
@@ -31,7 +27,7 @@ extioiic: interrupt-controller@0x1fe11600 {
 
 
 
-memory {
+memory@0x0 {
     name = "memory";
     device_type = "memory";
     reg = <0x00000000 0x08000000>;
@@ -43,18 +39,20 @@ cpuic: interrupt-controller {
     #interrupt-cells = <1>;
 };
 
-soc {
-    compatible = "simple-bus";
-    #address-cells = <1>;
-    #size-cells = <1>;
-    ranges = <0x10000000 0x10000000 0x10000000 >;
-
-    cpu_uart0: serial@0x1fe001e0 {
-    compatible = "ns16550a";
-    reg = < 0x1fe001e0 0x10>;
+bus_clk: bus_clk {
+    compatible = "fixed-clock";
     clock-frequency = <33000000>;
-    interrupt-parent = <&cpuic>;
-    interrupts = <2>;
+    #clock-cells = <0>;
+};
+
+
+serial0: serial@0x9fe001e0 {
+    compatible = "ns16550a";
+    reg = <0x9fe001e0 0x1000>;
+    reg-offset = <0>;
+    reg-shift = <0>;
+    clocks = <&bus_clk>;
+    current-speed = <115200>;
     no-loopback-test;
 };
 
@@ -103,5 +101,4 @@ partition@0x01400000 {
 };
 #endif
 
-};
 };
