@@ -17,7 +17,24 @@
 #define CONFIG_SYS_INIT_SP_ADDR	(CONFIG_SYS_SDRAM_BASE + \
 				CONFIG_SYS_INIT_SP_OFFSET)
 #endif
+//#define BOARD
+#define GPIO_BASE  0X1FD0F000
 
+# .equ LED_RG0_OFF , 0x0004
+# .equ LED_RG1_OFF , 0x0008
+# .equ LED_RG_BLANK, 0x0000
+# .equ LED_RG_GREEN, 0x0001
+# .equ LED_RG_RED  , 0x0002
+#define NUM_OFF    0x0010
+
+#ifdef  BOARD 
+#define WRITE_GPIO(off, value) \
+  li.w  t0, GPIO_BASE; \
+  addi.w   t0, t0, off; \
+  st.w value, t0, 0;
+#else 
+#define WRITE_GPIO(off, value)
+#endif
 .macro setup_stack_gd
     li.w	t0, -16
     li.w	t1, CONFIG_SYS_INIT_SP_ADDR
@@ -102,17 +119,27 @@ reset:
     /*spi speed up*/       
     # li.w    t0, 0x1fe80000  
     # li.w    t1, 0x17    
-    # st.b    t1, t0, 4  
-     
+    # st.b    t1, t0, 4 
+    li.w    t1,0xabcde 
+    WRITE_GPIO(NUM_OFF, t1)
     bl      initserial
+    li.w    t1,0xacebd 
+    WRITE_GPIO(NUM_OFF, t1)
+    PRINTSTR("\r\nserial init over\r\n")
+
 
     bl      cache_init                  
-    //PRINTSTR("\r\nCache init over\r\n")
+    PRINTSTR("\r\nCache init over\r\n")
                                                                                           
     /* enable DATF */
-    li.w    t1, 0x38 
-    li.w    t2, 0x70 
+    li.w    t1, 0x30 
+    li.w    t2, 0x78 
+    
     csrxchg t1, t2, csr_crmd 
+    
+    PRINTSTR("\r\nSet vaddr over\r\n")
+    pcaddu12i   t1, 0
+    WRITE_GPIO(NUM_OFF, t1)
     # la      t1, 1f
 #     jr      t1  
 # 1:    
@@ -261,9 +288,8 @@ LEAF(initserial)
     /* Lc modify Baut 115200 33M */
     li.w    t1, 0x12 
     st.b    t1, t0, NS16550_DATA
-    # srli.w  t1, t1, 8
-    # li.w    t1, 0x1
-    # st.b    t1, t0, NS16550_IER
+    srli.w  t1, t1, 8
+    st.b    t1, t0, NS16550_IER
     li.w    t1, CFCR_8BITS
     st.b    t1, t0, NS16550_CFCR
 
@@ -271,7 +297,7 @@ LEAF(initserial)
     st.b    t1, t0, NS16550_CFCR
     li.w    t1, MCR_DTR|MCR_RTS
     st.b    t1, t0, NS16550_MCR
-    li.w    t1, 0x1
+    li.w    t1, 0x0
     st.b    t1, t0, NS16550_IER
 
     /* uart int enable */
