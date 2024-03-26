@@ -96,13 +96,13 @@ reset:
     li.w    t1, CACHED_MEMORY_ADDR | 0x9 
     csrwr   t1, csr_dmw0 
     /* uncacheed window, temporary */
-    li.w    t1, UNCACHED_MEMORY_ADDR | 0x9  
+    li.w    t1, 0x0 | 0x9  
     csrwr   t1, csr_dmw1
 
     /*spi speed up*/       
-    li.w    t0, 0x1fe80000  
-    li.w    t1, 0x17    
-    st.b    t1, t0, 4  
+    # li.w    t0, 0x1fe80000  
+    # li.w    t1, 0x17    
+    # st.b    t1, t0, 4  
      
     bl      initserial
 
@@ -110,23 +110,25 @@ reset:
     //PRINTSTR("\r\nCache init over\r\n")
                                                                                           
     /* enable DATF */
-    li.w    t1, 0x20 
-    li.w    t2, 0x60 
+    li.w    t1, 0x38 
+    li.w    t2, 0x70 
     csrxchg t1, t2, csr_crmd 
+    # la      t1, 1f
+#     jr      t1  
+# 1:    
 
     /*sdram_config*/
-    li.w      t0, 0x1fd00000 
-    /* 33M and 26M */
-    li.w      t1, 0x44518a   
-    st.w      t1, t0, 0x410
-    /* 33M and 26M */
-    li.w      t1, 0x24    
-    st.w      t1, t0, 0x414
-    /* 33M and 26M */
-    li.w      t1, 0x224       
-    st.w      t1, t0, 0x414
-    //PRINTSTR("\r\nSDRAM init over\r\n")
-
+    # li.w      t0, 0x1fd00000 
+    # /* 33M and 26M */
+    # li.w      t1, 0x44518a   
+    # st.w      t1, t0, 0x410
+    # /* 33M and 26M */
+    # li.w      t1, 0x24    
+    # st.w      t1, t0, 0x414
+    # /* 33M and 26M */
+    # li.w      t1, 0x224       
+    # st.w      t1, t0, 0x414
+    PRINTSTR("\r\nSDRAM init over\r\n")
 
     //PRINTSTR("\r\nstart copy all program\r\n") 
     la      t0, _start 
@@ -148,6 +150,11 @@ loop:
     la      t0, c_main
     jirl    zero, t0, 0
 c_main:
+
+    li.w    t1, UNCACHED_MEMORY_ADDR | 0x9  
+    csrwr   t1, csr_dmw1
+
+
     //PRINTSTR("\r\nbefore set gd\r\n")
  	/* Set up initial stack and global data */
 	setup_stack_gd
@@ -242,7 +249,7 @@ LEAF(tgt_getchar)
 END(tgt_getchar)
 
 LEAF(initserial)
-    /* COM0_BASE_ADDR:0x1fe40000 */
+    /* COM0_BASE_ADDR:0x1fe001e0 */
     li.w   t0, COM0_BASE_ADDR    
 1:
     li.w   t1, FIFO_ENABLE|FIFO_RCV_RST|FIFO_XMT_RST|FIFO_TRIGGER_4
@@ -254,8 +261,9 @@ LEAF(initserial)
     /* Lc modify Baut 115200 33M */
     li.w    t1, 0x12 
     st.b    t1, t0, NS16550_DATA
-    srli.w  t1, t1, 8
-    st.b    t1, t0, NS16550_IER
+    # srli.w  t1, t1, 8
+    # li.w    t1, 0x1
+    # st.b    t1, t0, NS16550_IER
     li.w    t1, CFCR_8BITS
     st.b    t1, t0, NS16550_CFCR
 
@@ -263,16 +271,16 @@ LEAF(initserial)
     st.b    t1, t0, NS16550_CFCR
     li.w    t1, MCR_DTR|MCR_RTS
     st.b    t1, t0, NS16550_MCR
-    li.w    t1, 0x0
+    li.w    t1, 0x1
     st.b    t1, t0, NS16550_IER
 
     /* uart int enable */
-    li.w    t0, CONFREG_BASE
-    li.w    t1, 0x1000
-    or      t0, t0, t1
-    li.w    t1, 0x1
-    st.w    t1, t0, 0x44 #EN
-    st.w    t1, t0, 0x50 #POL
+    # li.w    t0, CONFREG_BASE
+    # li.w    t1, 0x1000
+    # or      t0, t0, t1
+    # li.w    t1, 0x1
+    # st.w    t1, t0, 0x44 #EN
+    # st.w    t1, t0, 0x50 #POL
 
     jirl    zero, ra, 0
 END(initserial)

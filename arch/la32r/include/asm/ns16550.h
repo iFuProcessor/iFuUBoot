@@ -1,5 +1,5 @@
-#define COM0_BASE_ADDR  0x1fe40000
-#define COM1_BASE_ADDR  0x1fe40000
+#define COM0_BASE_ADDR  0x1fe001e0
+#define COM1_BASE_ADDR  0x1fe001e0
 #define CONFREG_BASE    0x1fd00000
 
 #define NS16550_DATA    0
