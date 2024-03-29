@@ -39,11 +39,6 @@ cpuic: interrupt-controller {
     #interrupt-cells = <1>;
 };
 
-bus_clk: bus_clk {
-    compatible = "fixed-clock";
-    clock-frequency = <33000000>;
-    #clock-cells = <0>;
-};
 
 
 serial0: serial@0x9fe001e0 {
@@ -51,22 +46,16 @@ serial0: serial@0x9fe001e0 {
     reg = <0x9fe001e0 0x1000>;
     reg-offset = <0>;
     reg-shift = <0>;
-    clocks = <&bus_clk>;
+    clock-frequency = <33000000>;
     current-speed = <115200>;
     no-loopback-test;
 };
 
-gmac0: dmfe@0x1ff00000 {
-    compatible = "dmfe";
-    reg = <0x1ff00000 0x10000>;
-    interrupt-parent = <&cpuic>;
-    interrupts = <3>;
-    interrupt-names = "macirq";
-    mac-address = [ 64 48 48 48 48 60 ];/* [>mac 64:48:48:48:48:60 <]*/
-    phy-mode = "rgmii";
-    bus_id = <0x0>;
-    phy_addr = <0xffffffff>;
-    dma-mask = <0xffffffff 0xffffffff>;
+gmac0: ethernet@0x9ff00000 {
+    compatible = "ls,ls-dmfe";
+    evice_type = "network";
+    reg = <0x9ff00000 0x10000>;
+    mac-address = [ 00 98 76 64 32 19 ];/* [>mac 00:98:76:64:32:19 <]*/
 };
 
 #if 0

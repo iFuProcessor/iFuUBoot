@@ -92,11 +92,16 @@ uncached:
 	and	s0, s0, a0
 
 	PRINTSTR("\r\nCPU Trigger exception!\r\n")
+    PRINT_CSR(0x0);
+    PRINT_CSR(0x1);
+	PRINT_CSR(0x2);
+	PRINT_CSR(0x3);
 	PRINT_CSR(0x4);
 	PRINT_CSR(0x5);
 	PRINT_CSR(0x6);
 	PRINT_CSR(0x7);
-	PRINT_CSR(0x8);
+    PRINT_CSR(0x180);
+    PRINT_CSR(0x181);
 1:
 	b	1b
 
@@ -175,7 +180,9 @@ loop:
     csrwr   t1, csr_dmw0 
 
     la      t0, c_main
+
     jirl    zero, t0, 0
+
 c_main:
 
     li.w    t1, UNCACHED_MEMORY_ADDR | 0x9  
