@@ -60,10 +60,11 @@
 #define CONFIG_ENV_SIZE		0x4000
 #define CONFIG_EXTRA_ENV_SETTINGS \
     "autoload=no\0" \
-    "serverip=192.168.1.123\0" \
-    "ipaddr=192.168.1.122\0" \
+    "serverip=10.170.133.145\0" \
+    "ipaddr=10.170.133.10\0" \
     "netmask=255.255.255.0\0" \
-    "ethaddr=00:98:76:64:32:19\0"
+    "ethaddr=00:98:76:64:32:19\0"\
+    "bootcmd=console=ttyS0,115200 rdinit=/init"
 
 
 
