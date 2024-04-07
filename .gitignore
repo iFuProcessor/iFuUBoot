@@ -34,8 +34,6 @@
 *.swp
 *.tab.[ch]
 
-# Build tree
-/build*
 
 #
 # Top-level generic files
