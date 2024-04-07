@@ -17,24 +17,7 @@
 #define CONFIG_SYS_INIT_SP_ADDR	(CONFIG_SYS_SDRAM_BASE + \
 				CONFIG_SYS_INIT_SP_OFFSET)
 #endif
-//#define BOARD
-#define GPIO_BASE  0X1FD0F000
 
-# .equ LED_RG0_OFF , 0x0004
-# .equ LED_RG1_OFF , 0x0008
-# .equ LED_RG_BLANK, 0x0000
-# .equ LED_RG_GREEN, 0x0001
-# .equ LED_RG_RED  , 0x0002
-#define NUM_OFF    0x0010
-
-#ifdef  BOARD 
-#define WRITE_GPIO(off, value) \
-  li.w  t0, GPIO_BASE; \
-  addi.w   t0, t0, off; \
-  st.w value, t0, 0;
-#else 
-#define WRITE_GPIO(off, value)
-#endif
 .macro setup_stack_gd
     li.w	t0, -16
     li.w	t1, CONFIG_SYS_INIT_SP_ADDR
@@ -118,48 +101,48 @@ reset:
     li.w    t1, CACHED_MEMORY_ADDR | 0x9 
     csrwr   t1, csr_dmw0 
     /* uncacheed window, temporary */
-    li.w    t1, 0x0 | 0x9  
+    #ifdef CONFIG_TARGET_LA32R_BAIXINMEGA_DEMO
+    li.w    t1, UNCACHED_MEMORY_ADDR | 0x9
+    #else 
+    li.w    t1, DIRECT_MAPPED_MEMORY_ADDR | 0x9  
+    #endif 
     csrwr   t1, csr_dmw1
 
     /*spi speed up*/       
-    # li.w    t0, 0x1fe80000  
-    # li.w    t1, 0x17    
-    # st.b    t1, t0, 4 
-    li.w    t1,0xabcde 
-    WRITE_GPIO(NUM_OFF, t1)
-    bl      initserial
-    li.w    t1,0xacebd 
-    WRITE_GPIO(NUM_OFF, t1)
-    PRINTSTR("\r\nserial init over\r\n")
+    #ifdef CONFIG_TARGET_LA32R_BAIXINMEGA_DEMO
+    li.w    t0, 0x1fe80000  
+    li.w    t1, 0x17    
+    st.b    t1, t0, 4 
+    #endif
 
+    bl      initserial
 
     bl      cache_init                  
     PRINTSTR("\r\nCache init over\r\n")
-                                                                                          
+
     /* enable DATF */
+    #ifdef CONFIG_TARGET_LA32R_BAIXINMEGA_DEMO
+    li.w    t1, 0x20 
+    li.w    t2, 0x60 
+    #else
     li.w    t1, 0x30 
     li.w    t2, 0x78 
-    
+    #endif
     csrxchg t1, t2, csr_crmd 
     
-    PRINTSTR("\r\nSet vaddr over\r\n")
-    pcaddu12i   t1, 0
-    WRITE_GPIO(NUM_OFF, t1)
-    # la      t1, 1f
-#     jr      t1  
-# 1:    
-
+    #ifdef CONFIG_TARGET_LA32R_BAIXINMEGA_DEMO
     /*sdram_config*/
-    # li.w      t0, 0x1fd00000 
-    # /* 33M and 26M */
-    # li.w      t1, 0x44518a   
-    # st.w      t1, t0, 0x410
-    # /* 33M and 26M */
-    # li.w      t1, 0x24    
-    # st.w      t1, t0, 0x414
-    # /* 33M and 26M */
-    # li.w      t1, 0x224       
-    # st.w      t1, t0, 0x414
+    li.w      t0, 0x1fd00000 
+    /* 33M and 26M */
+    li.w      t1, 0x44518a   
+    st.w      t1, t0, 0x410
+    /* 33M and 26M */
+    li.w      t1, 0x24    
+    st.w      t1, t0, 0x414
+    /* 33M and 26M */
+    li.w      t1, 0x224       
+    st.w      t1, t0, 0x414
+    #endif
     PRINTSTR("\r\nSDRAM init over\r\n")
 
     //PRINTSTR("\r\nstart copy all program\r\n") 
@@ -180,15 +163,12 @@ loop:
     csrwr   t1, csr_dmw0 
 
     la      t0, c_main
-
     jirl    zero, t0, 0
-
 c_main:
-
+    #ifdef CONFIG_TARGET_LA32R_LOONGSONSOC_DEMO
     li.w    t1, UNCACHED_MEMORY_ADDR | 0x9  
     csrwr   t1, csr_dmw1
-
-
+    #endif
     //PRINTSTR("\r\nbefore set gd\r\n")
  	/* Set up initial stack and global data */
 	setup_stack_gd
@@ -283,7 +263,7 @@ LEAF(tgt_getchar)
 END(tgt_getchar)
 
 LEAF(initserial)
-    /* COM0_BASE_ADDR:0x1fe001e0 */
+    /* COM0_BASE_ADDR:0x1fe001e0(LOONGSON_SOC) 0x1fe40000(BAIXIN_MEGA) */
     li.w   t0, COM0_BASE_ADDR    
 1:
     li.w   t1, FIFO_ENABLE|FIFO_RCV_RST|FIFO_XMT_RST|FIFO_TRIGGER_4
@@ -307,13 +287,15 @@ LEAF(initserial)
     li.w    t1, 0x0
     st.b    t1, t0, NS16550_IER
 
+    #ifdef CONFIG_TARGET_LA32R_BAIXINMEGA_DEMO
     /* uart int enable */
-    # li.w    t0, CONFREG_BASE
-    # li.w    t1, 0x1000
-    # or      t0, t0, t1
-    # li.w    t1, 0x1
-    # st.w    t1, t0, 0x44 #EN
-    # st.w    t1, t0, 0x50 #POL
+    li.w    t0, CONFREG_BASE
+    li.w    t1, 0x1000
+    or      t0, t0, t1
+    li.w    t1, 0x1
+    st.w    t1, t0, 0x44 #EN
+    st.w    t1, t0, 0x50 #POL
+    #endif
 
     jirl    zero, ra, 0
 END(initserial)

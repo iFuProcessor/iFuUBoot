@@ -8,8 +8,9 @@
 
 #include <asm/mach-generic/spaces.h>
 
-#define CACHED_MEMORY_ADDR		0xa0000000
-#define UNCACHED_MEMORY_ADDR    0x80000000
+#define DIRECT_MAPPED_MEMORY_ADDR 0x0
+#define CACHED_MEMORY_ADDR		  0xa0000000
+#define UNCACHED_MEMORY_ADDR      0x80000000
 
 #define CACHED_TO_PHYS(x)		VA_TO_PHYS(x)
 #define UNCACHED_TO_PHYS(x)		VA_TO_PHYS(x)
