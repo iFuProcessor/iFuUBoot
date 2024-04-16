@@ -30,7 +30,7 @@ config SYS_TEXT_BASE
 
 endif
 
-if TARGET_LA32RSOC_DEMO
+if TARGET_LA32R_LOONGSONSOC_DEMO
 
 config SYS_BOARD
     default "2019"
@@ -39,14 +39,14 @@ config SYS_VENDOR
     default "nscscc"
 
 config SYS_CONFIG_NAME
-    default "megasoc_demo"
+    default "la32rsoc_demo"
 
 config SYS_TEXT_BASE
     default 0xBC000000
 
 endif
 
-if TARGET_LA32RMEGA_DEMO
+if TARGET_LA32R_BAIXINMEGA_DEMO
 
 config SYS_BOARD
     default "2019"

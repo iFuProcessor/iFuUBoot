@@ -317,9 +317,12 @@ int do_bootelf(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	 * pass address parameter as argv[0] (aka command name),
 	 * and all remaining args
 	 */
+	/* 最新版uboot没有这段printf，感觉像是调试增加的内容，有一定导致loongson soc上板跑不过的bug，
+	如果以后需要，酌情打开。。。
 	printf("argc: %d, argv_addr: %08lx\n", argc, argv);
 	printf("argv: %08lx, %08lx, %08lx, %08lx\n", argv[0], argv[1], argv[2], argv[3]);
 	printf("argv0: %s\nargv1:%s\nargv2:%s\n", argv[0], argv[1], argv[2]);
+	*/
 	rc = do_bootelf_exec((void *)addr, argc, argv);
 	if (rc != 0)
 		rcode = 1;	

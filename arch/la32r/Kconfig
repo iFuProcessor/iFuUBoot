@@ -4,8 +4,17 @@ menu "LA32R architecture"
 config SYS_ARCH
 	default "la32r"
 
-config TARGET_LA32RMEGA_DEMO
-    bool "LA32RMEGA Demo SoC"
+choice
+	prompt "soc select"
+	default TARGET_LA32R_LOONGSONSOC_DEMO
+
+config TARGET_LA32R_LOONGSONSOC_DEMO
+	bool "LA32R SOC Demo Soc"	
+
+config TARGET_LA32R_BAIXINMEGA_DEMO
+    bool "LA32R BAIXIN MEGA Demo SoC"
+
+endchoice
 
 config LA32R_L1_CACHE_SHIFT
 	int
@@ -36,12 +45,11 @@ endmenu
 
 config SYS_CONFIG_NAME
     string "Config name"
-    depends on TARGET_LA32RMEGA_DEMO
-    default "la32rmegasoc_demo"
+    default "la32rmegasoc_demo" if TARGET_LA32R_BAIXINMEGA_DEMO
+	default "la32rsoc_demo" if TARGET_LA32R_LOONGSONSOC_DEMO
 
 config SYS_TEXT_BASE
     hex "Sys text base"
-    depends on TARGET_LA32RMEGA_DEMO
     default 0xa0200000
 
 config LA32R_RELOCATION_TABLE_SIZE

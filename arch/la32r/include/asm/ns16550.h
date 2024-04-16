@@ -1,5 +1,10 @@
+#ifdef CONFIG_TARGET_LA32R_LOONGSONSOC_DEMO
+#define COM0_BASE_ADDR  0x1fe001e0
+#define COM1_BASE_ADDR  0x1fe001e0
+#else 
 #define COM0_BASE_ADDR  0x1fe40000
 #define COM1_BASE_ADDR  0x1fe40000
+#endif
 #define CONFREG_BASE    0x1fd00000
 
 #define NS16550_DATA    0
