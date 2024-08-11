@@ -37,6 +37,21 @@ static void run_preboot_environment_command(void)
 #endif /* CONFIG_PREBOOT */
 }
 
+static const char* logo_1 =
+"    ______            __                 __  __        _                           _  __        \n\
+   / ____/__  __ ____/ /____ _ ____     / / / /____   (_)_   __ ___   _____ _____ (_)/ /_ __  __ \n\
+  / /_   / / / // __  // __ `// __ \\   / / / // __ \\ / /| | / // _ \\ / ___// ___// // __// / / / \n\
+ / __/  / /_/ // /_/ // /_/ // / / /  / /_/ // / / // / | |/ //  __// /   (__  )/ // /_ / /_/ /  \n\
+/_/     \\__,_/ \\__,_/ \\__,_//_/ /_/   \\____//_/ /_//_/  |___/ \\___//_/   /____//_/ \\__/ \\__, /   \n\
+                                                                                       /____/    \n";
+static const char* logo_2 =
+"                                                          _  ______        ______                 \n\
+                                                         (_)/ ____/__  __ / ____/____   _____ ___  \n\
+                                 ______ ______ ______   / // /_   / / / // /    / __ \\ / ___// _ \\ \n\
+                                /_____//_____//_____/  / // __/  / /_/ // /___ / /_/ // /   /  __/ \n\
+                                                      /_//_/     \\__,_/ \\____/ \\____//_/    \\___/  \n\
+                                                                                                   \n";
+
 /* We come here after U-Boot is initialised and ready to process commands */
 void main_loop(void)
 {
@@ -59,6 +74,7 @@ void main_loop(void)
 
 	autoboot_command(s);
 
+    printf("%s", logo_1); printf("%s", logo_2);
 	cli_loop();
 	panic("No CLI available");
 }

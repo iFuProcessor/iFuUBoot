@@ -145,6 +145,18 @@ reset:
     #endif
     PRINTSTR("\r\nSDRAM init over\r\n")
 
+    li.w    t1, 0xa0000009
+    csrwr   t1, csr_dmw0
+    li.w    t1, 0x10
+    li.w    t2, 0x18
+    csrxchg t1, t2, csr_crmd
+    li.w    t0, 0x20240811
+    li.w    a0, 0xbfd0f010
+    st.w    t0, a0, 0
+    li.w    t0, 0x00000f0f
+    li.w    a0, 0xbfd0f000
+    st.w    t0, a0, 0
+
     //PRINTSTR("\r\nstart copy all program\r\n") 
     la      t0, _start 
     la      t2, _end  
